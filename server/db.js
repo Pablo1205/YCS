@@ -3,9 +3,9 @@ var mysql = require('mysql');
 require('dotenv').config();
 var connection = mysql.createConnection({
   host : process.env.HOST_SQL,
-  user : "272665",
+  user : process.env.USER,
   password : process.env.PASSWORD,
-  database: 'mcordonnance_mysql',
+  database: process.env.DATABASE,
   multipleStatements: true
 });
 
