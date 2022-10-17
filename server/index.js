@@ -4,6 +4,7 @@ const app = express();
 const session = require('express-session')
 const path = require('path')
 const passport = require('passport');
+require('./passport/config')(passport) // pass passport for configuration
 var MySQLStore = require('express-mysql-session')(session);
 const bodyParser = require("body-parser");
 const logger = require('morgan')
@@ -19,7 +20,7 @@ app.use(session({
         password: process.env.PASSWORD,
     }),
     secret: 'grehjznejzkhgjrez',
-    saveUninitialized: false,
+    saveUninitialized: false,   
     resave: false,
     secure: false
 }))

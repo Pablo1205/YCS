@@ -14,9 +14,9 @@ const hashPassword = (password) => {
 
 }
 
-const verifyPassword = (password) => {
+const verifyPassword = (password, hashPassword) => {
     return new Promise((resolve, reject) => {
-        bcrypt.compare(password, results[0].Password, (err, res) => {
+        bcrypt.compare(password, hashPassword, (err, res) => {
             if (err) {
                 console.error(err)
                 reject(err);
