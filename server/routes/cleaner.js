@@ -6,7 +6,8 @@ const passport = require('passport');
 // gérer entité cleaner et afficher disponibilité
 // resultats de query dans result
 router.get('/available/:idCleaner', (req, res) => {
-    connection.query(`SELECT cleaners.idCleaner, cleanersSchedule.idSchedule, cleanersSchedule.day,cleanersSchedule.StartTime, cleanersSchedule.EndTime FROM cleaners JOIN cleanersSchedule ON cleaners.idCleaner=cleanersSchedule.idCleaner WHERE cleaners.idCleaner=` + req.params.idCleaner , async (error, results) => {
+    const sql = "SELECT cleaners.idCleaner, cleanersSchedule.idSchedule, cleanersSchedule.day,cleanersSchedule.StartTime, cleanersSchedule.EndTime FROM cleaners JOIN cleanersSchedule ON cleaners.idCleaner=cleanersSchedule.idCleaner WHERE cleaners.idCleaner= ?;"
+    connection.query(sql,[req.params.idCleaner], async (error, results) => {
         if (error) throw error;
         if (results.length == 0) {
             return res.status(409).json({ message: 'ID inexistant' })
