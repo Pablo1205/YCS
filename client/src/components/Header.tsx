@@ -2,14 +2,24 @@ import React from 'react'
 import Button from 'react-bootstrap/Button';
 import { useNavigate } from "react-router-dom";
 
-function Header() {
+function Header({ isAuth }: { isAuth: boolean }) {
   const navigate = useNavigate();
-  return (
-    <div>
-      <div>Header</div>
-      <Button onClick={() => navigate("/register")} variant="primary" >Primary</Button>  
-    </div>
-  )
+  if(isAuth) {
+    return (
+      <div>
+        <div>Header</div>
+        <Button onClick={() => navigate("/register")} variant="primary" >Primary</Button>
+      </div>
+    )
+  } else {
+    return (
+      <div>
+        <Button onClick={() => navigate("/register")} variant="primary" >Register</Button>
+        <Button onClick={() => navigate("/login")} variant="primary" >Login</Button>
+      </div>
+    )
+  }
+  
 }
 
 export default Header
