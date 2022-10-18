@@ -8,7 +8,7 @@ function Header({ isAuth }: { isAuth: boolean }) {
     return (
       <div>
         <div>Header</div>
-        <Button onClick={() => navigate("/register")} variant="primary" >Primary</Button>
+        <Button onClick={() => navigate("/home")} variant="primary" >Home</Button>
       </div>
     )
   } else {

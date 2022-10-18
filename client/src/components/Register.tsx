@@ -2,11 +2,11 @@ import React, { useState } from 'react'
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
-import { useNavigate  } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import api from "../api/api.js";
 
-export default function Register() {
+export default function Register({ onSuccess }: { onSuccess: (val: boolean) => void }) {
   const [mail, setMail] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -44,11 +44,11 @@ export default function Register() {
     })
       .then((res) => {
         console.log("good")
-        navigate("/login");
+        setError("");
+        onSuccess(true);
       })
       .catch((err) => {
         setError(err.message);
-        navigate("/login");
       })
 
   }
