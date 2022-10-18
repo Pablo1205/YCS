@@ -11,7 +11,7 @@ router.post('/register', (req, res) => {
     const password = req.body.password;
     const email = req.body.email;
     const lastName = req.body.lastName;
-    const firstName = req.body.first;
+    const firstName = req.body.firstName;
     connection.query(`SELECT email from users WHERE email = '${email}'`, async (error, results, fields) => {
         if (error) throw error;
         if (results.length > 0) {
