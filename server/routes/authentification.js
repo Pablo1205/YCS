@@ -6,12 +6,12 @@ var connection = require('../db');
 const passport = require('passport');
 
 
-router.post('/register', (req, res) => {
+router.post('/register', (req, res, next) => {
     const username = req.body.username;
     const password = req.body.password;
     const email = req.body.email;
     const lastName = req.body.lastName;
-    const firstName = req.body.first;
+    const firstName = req.body.firstName;
     connection.query(`SELECT email from users WHERE email = '${email}'`, async (error, results, fields) => {
         if (error) throw error;
         if (results.length > 0) {
@@ -19,8 +19,8 @@ router.post('/register', (req, res) => {
         } else {
             console.log("PASSWORD BEFORE IS ", password);
             const hashedPassword = await passwordF.hashPassword(password);
-            connection.query(`INSERT INTO users (email, password, username, lastName, firstName) VALUES('${email}', '${hashedPassword}', '${username}', '${lastName}', '${firstName}')`, async (err, res2, fields) => {
-                if (err) return res.status(409).json({ message: 'Utilisateur existe déjà' })
+            const sql = "INSERT INTO users (email, password, username, lastName, firstName) VALUES(?,?,?,?,?);";
+            connection.query(sql, [email, hashedPassword, username, lastName, firstName], async (err, res2, fields) => {
                 return res.status(200).json({ message: 'User added' })
             })
         }
@@ -33,8 +33,8 @@ router.post('/login', passport.authenticate('local', {}),
         return res.status(200).json({ message: 'User is authenticated' })
     });
 
-router.get('/login', (req, res) => {
-    if(req.user) {
+router.get('/login', (req, res, next) => {
+    if (req.user) {
         return res.status(200).json({ message: 'User is authenticated' })
     } else {
         return res.status(401).json({ message: 'User is not authenticated' })
