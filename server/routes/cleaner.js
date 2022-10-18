@@ -3,8 +3,6 @@ const router = express.Router()
 var connection = require('../db');
 const passport = require('passport');
 
-// gérer entité cleaner et afficher disponibilité
-// resultats de query dans result
 router.get('/available/:idCleaner', (req, res) => {
     const sql = "SELECT cleaners.idCleaner, cleanersSchedule.idSchedule, cleanersSchedule.day,cleanersSchedule.StartTime, cleanersSchedule.EndTime FROM cleaners JOIN cleanersSchedule ON cleaners.idCleaner=cleanersSchedule.idCleaner WHERE cleaners.idCleaner= ?;"
     connection.query(sql,[req.params.idCleaner], async (error, results) => {
@@ -43,6 +41,12 @@ router.post('/addNewCleaner/', (req, res) => {
     if (email.length == 0) { // vérifier présence'@'
         return res.status(409).json({ message: 'Il manque un email' })
     }
+
+    if (mailValidation(email) == false) { // vérifier présence'@'
+        return res.status(409).json({ message: 'Le format ne correspond pas a un email' })
+    }
+
+
     if (firstName.length == 0) { // vérifier que ce ne soient que des lettres
         return res.status(409).json({ message: 'Il manque un prénom' })
     }
@@ -83,5 +87,14 @@ router.get('/deleteCleaner/', (req, res) => {
         }
     })
 })
+
+const mailValidation = (mail) => {
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
+    if (reg.test(mail) === false) {
+
+      return false;
+    }
+    return true;
+  }
 
 module.exports = router
