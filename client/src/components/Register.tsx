@@ -1,17 +1,22 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
+import { useNavigate  } from "react-router-dom";
+
+import api from "../api/api.js";
 
 export default function Register() {
-  const [mail, setMail] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [firstName, setFirstName] = useState("");
+  const [mail, setMail] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
+  const [firstName, setFirstName] = useState<string>("");
 
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string>("");
+
+  const navigate = useNavigate();
 
   const mailValidation = () => {
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
@@ -22,6 +27,7 @@ export default function Register() {
     return true;
   }
 
+
   const sendFormulaire = () => {
     if (mailValidation() === false) return setError("Mail is incorrect");
     if (username.length === 0) return setError("Username is incorrect");
@@ -29,7 +35,22 @@ export default function Register() {
     if (password !== confirmPassword) return setError("Passwords don't match");
     if (lastName.length === 0) return setError("Last name is incorrect");
     if (firstName.length === 0) return setError("First name is incorrect");
-    setError("");
+    api.post("/auth/register", {
+      email: mail,
+      username: username,
+      password: password,
+      lastName: lastName,
+      firstName: firstName
+    })
+      .then((res) => {
+        console.log("good")
+        navigate("/login");
+      })
+      .catch((err) => {
+        setError(err.message);
+        navigate("/login");
+      })
+
   }
 
   return (
