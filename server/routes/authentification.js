@@ -12,7 +12,8 @@ router.post('/register', (req, res, next) => {
     const email = req.body.email;
     const lastName = req.body.lastName;
     const firstName = req.body.firstName;
-    connection.query(`SELECT email from users WHERE email = '${email}'`, async (error, results, fields) => {
+    const selectSQL = "SELECT email from users WHERE email = ?;";
+    connection.query(selectSQL,[email], async (error, results, fields) => {
         if (error) throw error;
         if (results.length > 0) {
             return res.status(409).json({ message: 'Utilisateur existe déjà' })

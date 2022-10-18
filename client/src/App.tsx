@@ -20,6 +20,7 @@ function App() {
       setIsAuth(true);
       setLoading(false);
     } catch (err) {
+      navigate("/login");
       setIsAuth(false);
       setLoading(false);
     }
@@ -34,6 +35,11 @@ function App() {
     navigate("/home");
   }
 
+  const logOut = () => {
+    setIsAuth(false);
+    navigate("/login");
+  }
+
   if (loading) {
     return (
       <></>
@@ -41,11 +47,11 @@ function App() {
   } else {
     return (
       <div className="px-3">
-        <Header isAuth={isAuth} />
+        <Header isAuth={isAuth} onSuccess={() => logOut()} />
         <Routes>
-          <Route path="/home" element={<Home />} />
-          <Route path='/register' element={<Register onSuccess={() => onAuthSuccess} />} />
-          <Route path='/login' element={<Login onSuccess={() => onAuthSuccess} />} />
+          <Route path="/home" element={<Home isAuth={isAuth} />} />
+          <Route path='/register' element={<Register onSuccess={() => onAuthSuccess()} />} />
+          <Route path='/login' element={<Login onSuccess={() => onAuthSuccess()} />} />
         </Routes>
       </div>
     );
