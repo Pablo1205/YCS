@@ -40,8 +40,8 @@ router.post('/setAvailable', (req, res, next) => {
 
 })
 
-router.get('/seeAllCleaners/', (req, res) => {
-    connection.query(`SELECT * FROM cleaners `, async (error, results) => {
+router.get('/seeAllCleaners', (req, res) => {
+    connection.query(`SELECT * FROM users WHERE users.isCleaner=1`, async (error, results) => {
         if (error) throw error;
         if (results.length == 0) {
             return res.status(409).json({ message: 'Aucun cleaner existant' })
@@ -53,39 +53,8 @@ router.get('/seeAllCleaners/', (req, res) => {
     })
 })
 
-router.post('/addNewCleaner/', (req, res) => {
-
-    var Regex = '/^[^a-zA-Z]*$/';
-    const idCleaner = req.body.idCleaner;
-    const email = req.body.email;
-    const firstName = req.body.firstName;
-    const lastName = req.body.lastName;
-
-    if (email.length == 0) { // vérifier présence'@'
-        return res.status(409).json({ message: 'Il manque un email' })
-    }
-
-    if (mailValidation(email) == false) { // vérifier présence'@'
-        return res.status(409).json({ message: 'Le format ne correspond pas a un email' })
-    }
-
-
-    if (firstName.length == 0) { // vérifier que ce ne soient que des lettres
-        return res.status(409).json({ message: 'Il manque un prénom' })
-    }
-
-    if (lastName.length == 0) { // vérifier que ce ne soient que des lettres
-        return res.status(409).json({ message: 'Il manque un nom' })
-    }
-
-    connection.query(`INSERT INTO cleaners (idCleaner,email,firstName, lastName) VALUES(?,?,?,?)`, [idCleaner, email, firstName, lastName], async (err, results, fields) => {
-        if (err) return res.status(409).json({ message: 'Cleaner already existing' })
-        return res.status(200).json({ message: 'Cleaner added' })
-    })
-
-})
-router.get('/deleteCleaner/', (req, res) => {
-    connection.query(`SELECT * FROM cleaners `, async (error, results) => {
+router.get('/getCleanerByNameOrUsername/:firstName/:lastName/:username', (req, res) => {
+    connection.query(`SELECT * FROM users WHERE (users.isCleaner=1 AND ((users.firstName= ? AND users.lastName= ? ) OR users.username= ? ))`, [req.params.firstName, req.params.lastName, req.params.username], async (error, results) => {
         if (error) throw error;
         if (results.length == 0) {
             return res.status(409).json({ message: 'Aucun cleaner existant' })
@@ -93,6 +62,47 @@ router.get('/deleteCleaner/', (req, res) => {
             res.send(results)
             console.log(results)//this 
             return results
+        }
+    })
+
+})
+
+router.post('/addCleanerStatus/:id', (req, res) => {
+    const stringSelect = "SELECT users.isCleaner FROM users WHERE users.id = ? ;"
+    const stringUpdate = "UPDATE users SET users.isCleaner=1 WHERE users.id = ? ;"
+    const inserts = [req.params.id];
+    const sqlSelect = mysql.format(stringSelect, inserts);
+    const sqlUpdate = mysql.format(stringUpdate, inserts);
+    connection.query(sqlSelect, async (error, results) => {
+        if (error) throw error;
+        if (results.length == 0) {
+            return res.status(409).json({ message: 'User doesnt exist' })
+        } else {
+            connection.query(sqlUpdate, async (err, results2) => {
+                res.send({ message: 'Cleaner Status added' })
+                console.log({ message: 'Cleaner Status added' })
+                return results2
+            })
+        }
+    })
+})
+
+router.post('/deleteCleanerStatus/:id', (req, res) => {
+    const stringSelect = "SELECT users.isCleaner FROM users WHERE users.id = ? ;"
+    const stringUpdate = "UPDATE users SET users.isCleaner=0 WHERE users.id = ? ;"
+    const inserts = [req.params.id];
+    const sqlSelect = mysql.format(stringSelect, inserts);
+    const sqlUpdate = mysql.format(stringUpdate, inserts);
+    connection.query(sqlSelect, async (error, results) => {
+        if (error) throw error;
+        if (results.length == 0) {
+            return res.status(409).json({ message: 'User doesnt exist' })
+        } else {
+            connection.query(sqlUpdate, async (err, results2) => {
+                res.send({ message: 'Cleaner Status removed' })
+                console.log({ message: 'Cleaner Status removed' })
+                return results2
+            })
         }
     })
 })
