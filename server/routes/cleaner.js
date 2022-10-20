@@ -37,7 +37,6 @@ router.post('/setAvailable', (req, res, next) => {
             }
         })
     })
-
 })
 
 router.get('/seeAllCleaners', (req, res) => {
@@ -64,13 +63,12 @@ router.get('/getCleanerByNameOrUsername/:firstName/:lastName/:username', (req, r
             return results
         }
     })
-
 })
 
-router.post('/addCleanerStatus/:id', (req, res) => {
+router.post('/addCleanerStatus/:city/:id', (req, res) => {
     const stringSelect = "SELECT users.isCleaner FROM users WHERE users.id = ? ;"
     const stringUpdate = "UPDATE users SET users.isCleaner=1 WHERE users.id = ? ;"
-    const inserts = [req.params.id];
+    const inserts= [req.params.id];
     const sqlSelect = mysql.format(stringSelect, inserts);
     const sqlUpdate = mysql.format(stringUpdate, inserts);
     connection.query(sqlSelect, async (error, results) => {
@@ -107,6 +105,35 @@ router.post('/deleteCleanerStatus/:id', (req, res) => {
     })
 })
 
+router.post('/updateUserCity/:city/:id', (req, res) => {
+    connection.query("UPDATE users SET users.city= ? WHERE users.id = ? ;", [req.params.city,req.params.id], async (error, results) => {
+        res.send({ message: 'User city updated' })
+        console.log({ message: 'User city updated' })
+        return results
+    })
+})
+
+router.get('/getCleanerByCity/:city', (req, res) => {
+    connection.query(`SELECT * FROM users WHERE (users.isCleaner=1 AND users.city= ? )`, [req.params.city], async (error, results) => {
+        if (error) throw error;
+        if (results.length == 0) {
+            return res.status(409).json({ message: 'No cleaner in this area' })
+        } else {
+            res.send(results)
+            console.log(results)//this 
+            return results
+        }
+    })
+})
+
+router.post('/updateUserCity/:city/:id', (req, res) => {
+    connection.query("UPDATE users SET users.city= ? WHERE users.id = ? ;", [req.params.city,req.params.id], async (error, results) => {
+        res.send({ message: 'User city updated' })
+        console.log({ message: 'User city updated' })
+        return results
+    })
+})
+
 const mailValidation = (mail) => {
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
     if (reg.test(mail) === false) {
@@ -115,5 +142,83 @@ const mailValidation = (mail) => {
     }
     return true;
 }
+
+router.post('/createProposal/:id', (req, res) => {
+    connection.query(`SELECT users.isCleaner FROM users WHERE users.id = ? ;`, [req.params.id] , async (err, results, fields) => {
+        if (err) {return res.status(409).json({ message: 'User cant book a cleaner has he/she has cleaner status' })}
+        else {
+            const idCleaner = req.body.idCleaner;
+            const idDay = req.body.idDay;
+            const address = req.body.address;
+            const StartDateTime = req.body.StartDateTime;
+            const EndDateTime = req.body.EndDateTime;
+
+            if (idCleaner.length == 0) { 
+                return res.status(409).json({ message: 'Il manque un cleaner' })
+            }
+            if (idDay.length == 0) { 
+                return res.status(409).json({ message: 'Il manque un jour' })
+            }
+            if (address.length == 0) { 
+                return res.status(409).json({ message: 'Il manque une adresse' })
+            }
+            if (StartDateTime.length == 0) { 
+                return res.status(409).json({ message: 'Il manque une heure de début' })
+            }
+            if (EndDateTime.length == 0) { 
+                return res.status(409).json({ message: 'Il manque une  heure de fin' })
+            }
+            
+            connection.query(`INSERT INTO acceptedProposal (idUser, idCleaner, idDay, address, StartDateTime , EndDateTime) VALUES(?,?,?,?,?,?)`, [ req.params.id, idCleaner, idDay , address , StartDateTime , EndDateTime ] , async (err, results2, fields) => {
+                res.send(results2)
+                console.log({ message: 'Proposal added' })
+                return results2
+            })
+        }
+    })
+})
+
+router.post('/createProposal/:id', (req, res) => {
+    connection.query(`SELECT users.isCleaner FROM users WHERE users.id = ? ;`, [req.params.id] , async (err, results, fields) => {
+        if (err) {return res.status(409).json({ message: 'User cant book a cleaner has he/she has cleaner status' })}
+        else {
+            const idCleaner = req.body.idCleaner;
+            const idDay = req.body.idDay;
+            const address = req.body.address;
+            const StartDateTime = req.body.StartDateTime;
+            const EndDateTime = req.body.EndDateTime;
+
+            if (idCleaner.length == 0) { 
+                return res.status(409).json({ message: 'Il manque un cleaner' })
+            }
+            if (idDay.length == 0) { 
+                return res.status(409).json({ message: 'Il manque un jour' })
+            }
+            if (address.length == 0) { 
+                return res.status(409).json({ message: 'Il manque une adresse' })
+            }
+            if (StartDateTime.length == 0) { 
+                return res.status(409).json({ message: 'Il manque une heure de début' })
+            }
+            if (EndDateTime.length == 0) { 
+                return res.status(409).json({ message: 'Il manque une  heure de fin' })
+            }
+            
+            connection.query(`INSERT INTO acceptedProposal (idUser, idCleaner, idDay, address, StartDateTime , EndDateTime) VALUES(?,?,?,?,?,?)`, [ req.params.id, idCleaner, idDay , address , StartDateTime , EndDateTime ] , async (err, results2, fields) => {
+                res.send(results2)
+                console.log({ message: 'Proposal added' })
+                return results2
+            })
+        }
+    })
+})
+
+router.delete('/deleteProposal/:idProposal', (req, res) => {
+    connection.query(`DELETE FROM acceptedProposal WHERE acceptedProposal.idProposal= ?`, [ req.params.idProposal ] , async (err, results, fields) => {
+        res.send({ message: 'Proposal removed' })
+        console.log({ message: 'Proposal removed' })
+        return results
+    })
+})
 
 module.exports = router
