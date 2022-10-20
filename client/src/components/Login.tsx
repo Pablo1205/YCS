@@ -16,13 +16,12 @@ export default function Login({ onSuccess }: { onSuccess: (val: boolean) => void
         api.post("/auth/login", {
             username: username,
             password: password,
-          })
+        })
             .then((res) => {
-              console.log("good")
-              onSuccess(true);
+                onSuccess(true);
             })
             .catch((err) => {
-              setError(err.message);
+                setError(err.message);
             })
     }
     return (

@@ -2,25 +2,29 @@
     margin-left: 2rem;
 }
 
-.logout:hover, .logo:hover {
+.logout:hover,
+.logo:hover {
     cursor: pointer;
 }
 
-.logo {
-}
+.logo {}
 
 
 .btn-header {
     text-decoration: none;
     color: #000000;
     position: relative;
-    margin-left: 2rem;
+    margin-left: 3rem;
+    color: black;
+    font-size: 1.5rem;
 }
+
 .btn-header:hover {
     cursor: pointer;
     text-decoration: none;
-    color: #000000;
+    color: #64B5F6;
 }
+
 .btn-header:after {
     content: "";
     position: absolute;

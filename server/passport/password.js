@@ -1,7 +1,6 @@
 const bcrypt = require('bcrypt')
 
 const hashPassword = (password) => {
-    console.log("PASSWORD IS :", password);
     return new Promise((resolve, reject) => {
         bcrypt.hash(password, 10, async (err, hash) => {
             if (err) {

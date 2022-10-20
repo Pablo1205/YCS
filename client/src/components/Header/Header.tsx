@@ -11,7 +11,6 @@ function Header({ isAuth, onSuccess }: { isAuth: boolean, onSuccess: (val: boole
   const logout = () => {
     api.post("/auth/logout")
       .then((res) => {
-        console.log("good")
         onSuccess(true);
       })
       .catch((err) => {
@@ -22,7 +21,7 @@ function Header({ isAuth, onSuccess }: { isAuth: boolean, onSuccess: (val: boole
       <div style={{ display: 'flex', justifyContent: "space-between", width: '100%', alignItems: "center" }}>
         <img className="logo" height={80} width={80} src={"/logo.png"} alt="Logo" onClick={() => navigate("/home")} />
         <div>
-          <a className="btn-header" onClick={() => navigate("/home")}>My account</a>
+          <a className="btn-header" onClick={() => navigate("/account")}>My account</a>
           <img className="logout" height={40} width={40} src={"/logout.png"} alt="Logo" onClick={() => logout()} />
         </div>
       </div>

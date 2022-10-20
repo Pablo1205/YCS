@@ -13,12 +13,11 @@ router.post('/register', (req, res, next) => {
     const lastName = req.body.lastName;
     const firstName = req.body.firstName;
     const selectSQL = "SELECT email from users WHERE email = ?;";
-    connection.query(selectSQL,[email], async (error, results, fields) => {
+    connection.query(selectSQL, [email], async (error, results, fields) => {
         if (error) throw error;
         if (results.length > 0) {
             return res.status(409).json({ message: 'Utilisateur existe déjà' })
         } else {
-            console.log("PASSWORD BEFORE IS ", password);
             const hashedPassword = await passwordF.hashPassword(password);
             const sql = "INSERT INTO users (email, password, username, lastName, firstName) VALUES(?,?,?,?,?);";
             connection.query(sql, [email, hashedPassword, username, lastName, firstName], async (err, res2, fields) => {
@@ -31,16 +30,29 @@ router.post('/register', (req, res, next) => {
 
 router.post('/login', passport.authenticate('local', {}),
     function (req, res) {
-        return res.status(200).json({ message: 'User is authenticated' })
+        const returnInfo = {
+            username: req.user.username,
+            email: req.user.email,
+            isCleaner: req.user.isCleaner,
+            id: req.user.id
+        }
+        return res.status(200).json({ message: 'User is authenticated', userInfo: returnInfo })
     });
 
 router.get('/login', (req, res, next) => {
     if (req.user) {
-        return res.status(200).json({ message: 'User is authenticated' })
+        const returnInfo = {
+            username: req.user.username,
+            email: req.user.email,
+            isCleaner: req.user.isCleaner,
+            id: req.user.id
+        }
+        return res.status(200).json({ message: 'User is authenticated', userInfo: returnInfo })
     } else {
         return res.status(401).json({ message: 'User is not authenticated' })
     }
 })
+
 
 router.post('/logout', function (req, res, next) {
     req.logout(function (err) {

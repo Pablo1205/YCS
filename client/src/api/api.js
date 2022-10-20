@@ -11,7 +11,6 @@ class api {
         return new Promise(async (resolve, reject) => {
             try {
                 const res = await axios.get(url + path, { withCredentials: true });
-                console.log(res);
                 resolve(res);
             } catch (e) {
                 reject(e);
@@ -23,7 +22,6 @@ class api {
         return new Promise(async (resolve, reject) => {
             try {
                 const res = await axios.post(url + path, body, { withCredentials: true });
-                console.log(res);
                 resolve(res);
             } catch (e) {
                 reject(e.response.data);
