@@ -8,7 +8,6 @@ import "./Account.css"
 
 import api from "../../api/api";
 
-const hours = ["8", "8.30", "9", "9.30", "10", "10.30", "11", "11.30", "12", "12.30", "13", "13.30", "14", "14.30", "15", "15.30", "16", "16.30", "17", "17.30"];
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 interface displayDate {
     date: Date;
@@ -45,6 +44,7 @@ export default function Account({ isCleaner, userInfo }: { isCleaner: number, us
         while (date.getMonth() === month) {
             days.push(new Date(date));
             date.setDate(date.getDate() + 1);
+            date.setHours(8);
         }
         return days;
     }
@@ -60,7 +60,9 @@ export default function Account({ isCleaner, userInfo }: { isCleaner: number, us
         fullMonthArray.forEach((value: Date) => {
             let found: boolean = false;
             data.forEach((date: any) => { //any car c'est le retour de l'api faudrait le fix
-                if (value.getTime() === new Date(date.day).getTime()) {
+                const dbDate = new Date(date.day);
+                dbDate.setHours(8);
+                if (value.getTime() === dbDate.getTime()) {
                     found = true;
                 }
             })
@@ -96,7 +98,13 @@ export default function Account({ isCleaner, userInfo }: { isCleaner: number, us
     }
 
     const confirm = () => {
-
+        const body = {
+            availableDate: availableDate,
+            month: startDate.getMonth(),
+            year: startDate.getFullYear()
+        }
+        console.log(availableDate);
+        api.post('/cleaner/setAvailable', body);
     }
     if (isCleaner === 1) {
         return (
