@@ -20,19 +20,18 @@ router.post('/setAvailable', (req, res, next) => {
     req.body.availableDate.forEach(value => {
         const string = "SELECT cleanersSchedule.* FROM cleanersSchedule WHERE cleanersSchedule.idCleaner = ? AND cleanersSchedule.day = ?;";
         const date = new Date(value.date);
-        const dayMysqlFormat = date.toISOString().slice(0, 10).replace('T', ' ');
-        const inserts = [userId, dayMysqlFormat];
+        const inserts = [userId, date];
         const sql = mysql.format(string, inserts);
         connection.query(sql, async (error, results) => {
             if (error) throw error;
             if (value.isSelected && results.length === 0) {
                 const insertString = "INSERT INTO cleanersSchedule(day, idCleaner, month, year) VALUES (?,?,?,?)";
-                connection.query(insertString, [dayMysqlFormat, userId, req.body.month, req.body.year], async (err, res2, fields) => {
+                connection.query(insertString, [date, userId, req.body.month, req.body.year], async (err, res2, fields) => {
                     if (err) throw err;
                 })
             } else if(!value.isSelected && results.length > 0) {
                 const insertString = "DELETE FROM cleanersSchedule WHERE day = ? AND idCleaner = ?";
-                connection.query(insertString, [dayMysqlFormat, userId], async (err, res2, fields) => {
+                connection.query(insertString, [date, userId], async (err, res2, fields) => {
                     if (err) throw err;
                 })
             }

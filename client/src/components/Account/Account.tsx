@@ -42,9 +42,10 @@ export default function Account({ isCleaner, userInfo }: { isCleaner: number, us
         var date = new Date(year, month, 1);
         var days = [];
         while (date.getMonth() === month) {
+            date.setHours(8);
             days.push(new Date(date));
             date.setDate(date.getDate() + 1);
-            date.setHours(8);
+            
         }
         return days;
     }
