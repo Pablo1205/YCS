@@ -40,7 +40,7 @@ router.post('/setAvailable', (req, res, next) => {
 })
 
 router.get('/seeAllCleaners', (req, res) => {
-    connection.query(`SELECT * FROM users WHERE users.isCleaner=1`, async (error, results) => {
+    connection.query(`SELECT users.username , users.firstName, users.lastname FROM users WHERE users.isCleaner=1`, async (error, results) => {
         if (error) throw error;
         if (results.length == 0) {
             return res.status(409).json({ message: 'Aucun cleaner existant' })
@@ -53,7 +53,7 @@ router.get('/seeAllCleaners', (req, res) => {
 })
 
 router.get('/getCleanerByNameOrUsername/:firstName/:lastName/:username', (req, res) => {
-    connection.query(`SELECT * FROM users WHERE (users.isCleaner=1 AND ((users.firstName= ? AND users.lastName= ? ) OR users.username= ? ))`, [req.params.firstName, req.params.lastName, req.params.username], async (error, results) => {
+    connection.query(`SELECT users.username , users.firstName, users.lastname FROM users WHERE (users.isCleaner=1 AND ((users.firstName= ? AND users.lastName= ? ) OR users.username= ? ))`, [req.params.firstName, req.params.lastName, req.params.username], async (error, results) => {
         if (error) throw error;
         if (results.length == 0) {
             return res.status(409).json({ message: 'Aucun cleaner existant' })
@@ -114,7 +114,7 @@ router.post('/updateUserCity/:city/:id', (req, res) => {
 })
 
 router.get('/getCleanerByCity/:city', (req, res) => {
-    connection.query(`SELECT * FROM users WHERE (users.isCleaner=1 AND users.city= ? )`, [req.params.city], async (error, results) => {
+    connection.query(`SELECT users.username , users.firstName, users.lastname FROM users WHERE (users.isCleaner=1 AND users.city= ? )`, [req.params.city], async (error, results) => {
         if (error) throw error;
         if (results.length == 0) {
             return res.status(409).json({ message: 'No cleaner in this area' })
@@ -133,15 +133,6 @@ router.post('/updateUserCity/:city/:id', (req, res) => {
         return results
     })
 })
-
-const mailValidation = (mail) => {
-    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
-    if (reg.test(mail) === false) {
-
-        return false;
-    }
-    return true;
-}
 
 router.post('/createProposal/:id', (req, res) => {
     connection.query(`SELECT users.isCleaner FROM users WHERE users.id = ? ;`, [req.params.id] , async (err, results, fields) => {
@@ -220,5 +211,14 @@ router.delete('/deleteProposal/:idProposal', (req, res) => {
         return results
     })
 })
+
+const mailValidation = (mail) => {
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
+    if (reg.test(mail) === false) {
+
+        return false;
+    }
+    return true;
+}
 
 module.exports = router
