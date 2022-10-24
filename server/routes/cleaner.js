@@ -124,7 +124,7 @@ router.post('/updateUserCity/:city/:id', (req, res) => {
     })
 })
 
-router.post('/createProposal/:id', (req, res) => {
+/*router.post('/createProposal/:id', (req, res) => {
     connection.query(`SELECT users.isCleaner FROM users WHERE users.id = ? ;`, [req.params.id], async (err, results, fields) => {
         if (err) { return res.status(409).json({ message: 'User cant book a cleaner has he/she has cleaner status' }) }
         else {
@@ -157,42 +157,8 @@ router.post('/createProposal/:id', (req, res) => {
             })
         }
     })
-})
+})*/
 
-router.post('/createProposal/:id', (req, res) => {
-    connection.query(`SELECT users.isCleaner FROM users WHERE users.id = ? ;`, [req.params.id], async (err, results, fields) => {
-        if (err) { return res.status(409).json({ message: 'User cant book a cleaner has he/she has cleaner status' }) }
-        else {
-            const idCleaner = req.body.idCleaner;
-            const idDay = req.body.idDay;
-            const address = req.body.address;
-            const StartDateTime = req.body.StartDateTime;
-            const EndDateTime = req.body.EndDateTime;
-
-            if (idCleaner.length == 0) {
-                return res.status(409).json({ message: 'Il manque un cleaner' })
-            }
-            if (idDay.length == 0) {
-                return res.status(409).json({ message: 'Il manque un jour' })
-            }
-            if (address.length == 0) {
-                return res.status(409).json({ message: 'Il manque une adresse' })
-            }
-            if (StartDateTime.length == 0) {
-                return res.status(409).json({ message: 'Il manque une heure de début' })
-            }
-            if (EndDateTime.length == 0) {
-                return res.status(409).json({ message: 'Il manque une  heure de fin' })
-            }
-
-            connection.query(`INSERT INTO acceptedProposal (idUser, idCleaner, idDay, address, StartDateTime , EndDateTime) VALUES(?,?,?,?,?,?)`, [req.params.id, idCleaner, idDay, address, StartDateTime, EndDateTime], async (err, results2, fields) => {
-                res.send(results2)
-                console.log({ message: 'Proposal added' })
-                return results2
-            })
-        }
-    })
-})
 
 router.delete('/deleteProposal/:idProposal', (req, res) => {
     connection.query(`DELETE FROM acceptedProposal WHERE acceptedProposal.idProposal= ?`, [req.params.idProposal], async (err, results, fields) => {
@@ -200,6 +166,66 @@ router.delete('/deleteProposal/:idProposal', (req, res) => {
         console.log({ message: 'Proposal removed' })
         return results
     })
+})
+
+//SELECT * FROM cleanersSchedule WHERE day LIKE '2022-10-01 __:__:__'
+
+router.get('/bookCleaner/:id/:date', (req, res) => {
+
+    //check day : modifier format de req.params.date, l'adatper au format envoyé en URL 
+    //SELECT * FROM acceptedProposal WHERE idDay = "2022-10-22" AND (StartDateTime > "2022-10-22 11:30:00" > EndDateTime) AND idCleaner=2
+    connection.query(`SELECT * FROM cleanersSchedule WHERE day LIKE '? __:__:__' AND idCleaner= ?`, [req.params.date,req.params.id], async (err, results, fields) => {
+        if (err) { return res.status(409).json({ message: 'Cleaner is not available on this date' }) } // verifier code erreur
+        else {
+
+            //check hour : modifier format de req.params.date, l'adatper au format envoyé en URL ::: attention ici on veut que le select ne retourne rien 
+            connection.query(`SELECT * FROM cleanersSchedule WHERE day LIKE '? __:__:__' AND idCleaner= ?`, [req.params.date,req.params.id], async (err, results, fields) => {
+                if (err) { return res.status(409).json({ message: 'Cleaner is not available on this date' }) } // verifier code erreur
+                else {
+                    // insert nouvel accepted proposal 
+                    /*connection.query(`SELECT users.isCleaner FROM users WHERE users.id = ? ;`, [req.params.id], async (err, results, fields) => {
+                        if (err) { return res.status(409).json({ message: 'User cant book a cleaner has he/she has cleaner status' }) }
+                        else {
+                            const idCleaner = req.body.idCleaner;
+                            const idDay = req.body.idDay;
+                            const address = req.body.address;
+                            const StartDateTime = req.body.StartDateTime;
+                            const EndDateTime = req.body.EndDateTime;
+                
+                            if (idCleaner.length == 0) {
+                                return res.status(409).json({ message: 'Il manque un cleaner' })
+                            }
+                            if (idDay.length == 0) {
+                                return res.status(409).json({ message: 'Il manque un jour' })
+                            }
+                            if (address.length == 0) {
+                                return res.status(409).json({ message: 'Il manque une adresse' })
+                            }
+                            if (StartDateTime.length == 0) {
+                                return res.status(409).json({ message: 'Il manque une heure de début' })
+                            }
+                            if (EndDateTime.length == 0) {
+                                return res.status(409).json({ message: 'Il manque une  heure de fin' })
+                            }
+                
+                            connection.query(`INSERT INTO acceptedProposal (idUser, idCleaner, idDay, address, StartDateTime , EndDateTime) VALUES(?,?,?,?,?,?)`, [req.params.id, idCleaner, idDay, address, StartDateTime, EndDateTime], async (err, results2, fields) => {
+                                res.send(results2)
+                                console.log({ message: 'Proposal added' })
+                                return results2
+                            })
+                        }
+                    })*/
+                }
+            })
+        }
+    })
+
+    
+
+
+
+
+
 })
 
 const mailValidation = (mail) => {
