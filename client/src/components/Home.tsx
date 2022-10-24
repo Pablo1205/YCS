@@ -14,10 +14,19 @@ export default function Home({ isAuth }: { isAuth: boolean }) {
     }
   }, [isAuth]);
 
+  useEffect(() => {
+    if (searchValueCity.length === 0 && searchValue.length === 0) {
+      getAllCleaners()
+    }
+  }, [searchValueCity, searchValue])
+
   const searchByCleaner = () => {
-    api.get(`/cleaner/getCleanerByNameOrUsername/${searchValue}/${searchValue}/${searchValue}`)
+    api.get(`/cleaner/getCleanerByNameOrUsername/${searchValue}`)
       .then(response => {
         setArrayCleaner(response.data)
+      })
+      .catch(() => {
+        setArrayCleaner([]);
       })
   }
   const searchByCity = () => {
@@ -25,27 +34,36 @@ export default function Home({ isAuth }: { isAuth: boolean }) {
       .then(response => {
         setArrayCleaner(response.data)
       })
+      .catch(() => {
+        setArrayCleaner([]);
+      })
   }
-
-  useEffect(() => {
+  const getAllCleaners = () => {
     api.get(`/cleaner/seeAllCleaners`)
       .then(response => {
         setArrayCleaner(response.data)
       })
+      .catch(() => {
+        setArrayCleaner([]);
+      })
+  }
+
+  useEffect(() => {
+    getAllCleaners()
   }, [])
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column',alignItems: "center"}}>
-      <div style={{ backgroundColor: "#107ACA",width: "100%",paddingLeft: "25%" }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: "center" }}>
+      <div style={{ backgroundColor: "#107ACA", width: "100%", paddingLeft: "25%" }}>
         <p style={{ color: "white", fontWeight: "bold", fontSize: 45 }}>Find an appointment with our cleaning staff</p>
-        <div style={{ display: "flex", width: "66%",justifyContent: "space-between"}}>
-          <div style={{ display: 'flex',backgroundColor: "#107ACA" ,height:"10%", width: "50%"}}>
-            <input type="text" value={searchValue} onChange={(e) => setSearchValue(e.target.value)} placeholder="Name or Username" style={{ border: "3px solid transparent",  borderRadius: "10px",width: "100%" }}/>
-            <button onClick={() => searchByCleaner()}  style={{ border: "3px solid black",  borderRadius: "10px", display: "flex", flexDirection: "row" }}>Search By Cleaner</button>
+        <div style={{ display: "flex", width: "66%", justifyContent: "space-between", paddingBottom: "10px" }}>
+          <div style={{ display: 'flex', backgroundColor: "#107ACA", maxWidth: "300px", flexDirection: "row", flexWrap: "wrap" }}>
+            <input type="text" value={searchValue} onChange={(e) => setSearchValue(e.target.value)} placeholder="Name of cleaner" style={{ border: "3px solid transparent", borderRadius: "10px", maxWidth: "200px" }} />
+            <button onClick={() => searchByCleaner()} style={{ marginLeft: "5px", border: "3px solid black", borderRadius: "10px", display: "flex", flexDirection: "row", maxWidth: "90px" }}>Search By Cleaner</button>
           </div>
-          <div style={{ display: 'flex',backgroundColor: "#107ACA" ,height:"10%",width: "50%"}}>
-            <input type="text" value={searchValueCity} onChange={(e) => setSearchValueCity(e.target.value)} placeholder="City" style={{ border: "3px solid transparent",  borderRadius: "10px",width: "100%" }}/>
-            <button onClick={() => searchByCity()} style={{ border: "3px solid black",  borderRadius: "10px", display: "flex", flexDirection: "row" }}>Search By City</button>
+          <div style={{ display: 'flex', backgroundColor: "#107ACA", maxWidth: "300px", flexDirection: "row", flexWrap: "wrap" }}>
+            <input type="text" value={searchValueCity} onChange={(e) => setSearchValueCity(e.target.value)} placeholder="City" style={{ border: "3px solid transparent", borderRadius: "10px", maxWidth: "200px" }} />
+            <button onClick={() => searchByCity()} style={{ marginLeft: "5px", border: "3px solid black", borderRadius: "10px", display: "flex", flexDirection: "row", maxWidth: "90px" }}>Search By City</button>
           </div>
         </div>
       </div>
