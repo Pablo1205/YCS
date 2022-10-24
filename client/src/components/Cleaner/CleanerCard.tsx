@@ -12,7 +12,7 @@ export default function CleanerCard({ cleaner, displayButton }: { cleaner: clean
     return (
         <div style={{ width: "100%", border: "3px solid black", marginBottom: 10, marginTop: 10, borderRadius: "10px", overflow: "hidden", display: "flex", flexDirection: "row" }}>
             <div style={{ backgroundColor: "#107ACA", width: "40%", padding: "10px", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-                <p style={{ color: "white", fontWeight: "bold" }}>{cleaner.firstName.toUpperCase()} {cleaner.lastName.toUpperCase()}</p>
+                <div style={{ color: "white", fontWeight: "bold", textAlign: "center", fontSize: "20px" }}>{cleaner.firstName.toUpperCase()} {cleaner.lastName.toUpperCase()}</div>
                 <div style={{ width: "40%", padding: "4px", backgroundColor: "#0D4DFD", borderRadius: 1000 }}>
                     <img src={cleaner.profilPicture} style={{ width: "100%", borderRadius: 1000, border: "1px solid black" }} />
                 </div>
@@ -23,9 +23,9 @@ export default function CleanerCard({ cleaner, displayButton }: { cleaner: clean
                 <p>{cleaner.bio}</p>
                 <div style={{ display: "flex", width: "100%", flexDirection: "row", justifyContent: "space-around", alignItems: "center" }}>
                     {displayButton &&
-                        <Button style={{ marginLeft: 10 }} onClick={() => redirectToProfil()} variant="outline-primary">Book</Button>
+                        <Button style={{ marginLeft: 10, }} onClick={() => redirectToProfil()} variant="outline-primary">Book</Button>
                     }
-                    <div>Joined : {new Date(cleaner.joinDate).toLocaleDateString("fr-FR")}</div>
+                    <div style={{textAlign: "center" }}>Joined : {new Date(cleaner.joinDate).toLocaleDateString("fr-FR")}</div>
                 </div>
             </div>
         </div>

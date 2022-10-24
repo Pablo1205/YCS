@@ -70,7 +70,7 @@ export default function Home({ isAuth }: { isAuth: boolean }) {
       <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", width: "90%" }}>
         {arrayCleaner.length !== 0 && arrayCleaner.map((cleaner, index) => {
           return (
-            <div key={index} style={{ minWidth: "45%" }}>
+            <div key={index} style={{ minWidth: "45%", maxWidth: "400px" }}>
               <CleanerCard cleaner={cleaner} displayButton />
             </div>
           )
