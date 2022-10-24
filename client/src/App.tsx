@@ -6,6 +6,8 @@ import Register from "./components/Register";
 import Login from "./components/Login";
 import Home from "./components/Home";
 import Account from "./components/Account/Account";
+import CleanerBook from "./components/Cleaner/CleanerBook";
+
 
 import api from "./api/api";
 
@@ -59,13 +61,14 @@ function App() {
     )
   } else {
     return (
-      <div className="px-3">
+      <div>
         <Header isAuth={isAuth} onSuccess={() => logOut()} />
         <Routes>
           <Route path="/home" element={<Home isAuth={isAuth} />} />
           <Route path='/register' element={<Register onSuccess={() => onAuthSuccess()} />} />
           <Route path='/login' element={<Login onSuccess={() => onAuthSuccess()} />} />
           <Route path='/account' element={<Account isCleaner={userInfo.isCleaner} userInfo={userInfo} />} />
+          <Route path='/book/:id' element={<CleanerBook />} />
         </Routes>
       </div>
     );

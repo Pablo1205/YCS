@@ -40,7 +40,7 @@ router.post('/setAvailable', (req, res, next) => {
 })
 
 router.get('/seeAllCleaners', (req, res) => {
-    connection.query(`SELECT users.username , users.firstName, users.lastname FROM users WHERE users.isCleaner=1`, async (error, results) => {
+    connection.query(`SELECT users.username , users.firstName, users.lastname, users.id, users.city, users.bio, users.joinDate, users.profilPicture, users.rayon FROM users WHERE users.isCleaner=1`, async (error, results) => {
         if (error) throw error;
         if (results.length == 0) {
             return res.status(409).json({ message: 'Aucun cleaner existant' })
