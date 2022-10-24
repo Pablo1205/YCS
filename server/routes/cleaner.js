@@ -56,13 +56,7 @@ router.get('/getCleanerByNameOrUsername/:value', (req, res) => {
     const value = req.params.value + "%";
     connection.query(`SELECT users.username , users.firstName, users.lastname FROM users WHERE (users.firstName LIKE ? OR users.lastName LIKE ?) AND users.isCleaner=1`, [value, value], async (error, results) => {
         if (error) throw error;
-        if (results.length == 0) {
-            return res.status(409).json({ data: [], message: 'Aucun cleaner existant' })
-        } else {
-            res.send(results)
-            console.log(results)//this 
-            return results
-        }
+        res.send(results)
     })
 })
 
