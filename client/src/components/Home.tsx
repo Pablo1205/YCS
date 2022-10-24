@@ -56,7 +56,7 @@ export default function Home({ isAuth }: { isAuth: boolean }) {
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: "center" }}>
       <div style={{ backgroundColor: "#107ACA", width: "100%", paddingLeft: "25%" }}>
         <p style={{ color: "white", fontWeight: "bold", fontSize: 45 }}>Find an appointment with our cleaning staff</p>
-        <div style={{ display: "flex", width: "66%", justifyContent: "space-between", paddingBottom: "10px" }}>
+        <div style={{ display: "flex", width: "66%", justifyContent: "space-between", paddingBottom: "10px", flexDirection: "row", flexWrap: "wrap" }}>
           <div style={{ display: 'flex', backgroundColor: "#107ACA", maxWidth: "300px", flexDirection: "row", flexWrap: "wrap" }}>
             <input type="text" value={searchValue} onChange={(e) => setSearchValue(e.target.value)} placeholder="Name of cleaner" style={{ border: "3px solid transparent", borderRadius: "10px", maxWidth: "200px" }} />
             <button onClick={() => searchByCleaner()} style={{ marginLeft: "5px", border: "3px solid black", borderRadius: "10px", display: "flex", flexDirection: "row", maxWidth: "90px" }}>Search By Cleaner</button>
