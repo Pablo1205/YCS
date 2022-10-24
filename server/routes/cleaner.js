@@ -48,11 +48,7 @@ router.get('/seeAllCleaners', (req, res) => {
 
 router.get('/getCleanerByNameOrUsername/:value', (req, res) => {
     const value = req.params.value + "%";
-<<<<<<< Updated upstream
-    connection.query(`SELECT users.username , users.firstName, users.lastname, users.id, users.city, users.bio, users.joinDate, users.profilPicture, users.rayon FROM users WHERE (users.firstName LIKE ? OR users.lastName LIKE ?) AND users.isCleaner=1`, [value, value], async (error, results) => {
-=======
     connection.query(`SELECT users.username , users.firstName, users.lastName FROM users WHERE (users.firstName LIKE ? OR users.lastName LIKE ?) AND users.isCleaner=1`, [value, value], async (error, results) => {
->>>>>>> Stashed changes
         if (error) throw error;
         res.send(results)
     })
@@ -107,12 +103,8 @@ router.post('/updateUserCity/:city/:id', (req, res) => {
 })
 
 router.get('/getCleanerByCity/:city', (req, res) => {
-<<<<<<< Updated upstream
     const city = req.params.city + "%";
     connection.query(`SELECT users.username , users.firstName, users.lastname, users.id, users.city, users.bio, users.joinDate, users.profilPicture, users.rayon FROM users WHERE (users.isCleaner=1 AND users.city LIKE ? )`, [city], async (error, results) => {
-=======
-    connection.query(`SELECT users.username , users.firstName, users.lastName FROM users WHERE (users.isCleaner=1 AND users.city= ? )`, [req.params.city], async (error, results) => {
->>>>>>> Stashed changes
         if (error) throw error;
         if (results.length == 0) {
             return res.status(409).json({ message: 'No cleaner in this area' })
