@@ -5,12 +5,6 @@ import "react-datepicker/dist/react-datepicker.css";
 
 import Button from 'react-bootstrap/Button';
 
-
-interface displayDate {
-    date: Date;
-    isSelected: boolean;
-}
-
 export default function Available() {
     const [startDate, setStartDate] = useState<Date>(new Date());
     const [availableDate, setAvailableDate] = useState<Array<displayDate>>([]);

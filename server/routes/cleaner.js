@@ -40,7 +40,7 @@ router.post('/setAvailable', (req, res, next) => {
 })
 
 router.get('/seeAllCleaners', (req, res) => {
-    connection.query(`SELECT users.username , users.firstName, users.lastname, users.id, users.city, users.bio, users.joinDate, users.profilPicture, users.rayon FROM users WHERE users.isCleaner=1`, async (error, results) => {
+    connection.query(`SELECT users.username , users.firstName, users.lastName, users.id, users.city, users.bio, users.joinDate, users.profilPicture, users.rayon FROM users WHERE users.isCleaner=1`, async (error, results) => {
         if (error) throw error;
         res.send(results)
     })
@@ -48,7 +48,7 @@ router.get('/seeAllCleaners', (req, res) => {
 
 router.get('/getCleanerByNameOrUsername/:value', (req, res) => {
     const value = req.params.value + "%";
-    connection.query(`SELECT users.username , users.firstName, users.lastname, users.id, users.city, users.bio, users.joinDate, users.profilPicture, users.rayon FROM users WHERE (users.firstName LIKE ? OR users.lastName LIKE ?) AND users.isCleaner=1`, [value, value], async (error, results) => {
+    connection.query(`SELECT users.username , users.firstName, users.lastName FROM users WHERE (users.firstName LIKE ? OR users.lastName LIKE ?) AND users.isCleaner=1`, [value, value], async (error, results) => {
         if (error) throw error;
         res.send(results)
     })

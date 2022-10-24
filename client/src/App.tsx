@@ -13,13 +13,6 @@ import api from "./api/api";
 
 import "./App.css";
 
-interface userInfo {
-  username: string;
-  isCleaner: number;
-  email: string;
-  id: number;
-}
-
 function App() {
   const [isAuth, setIsAuth] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
@@ -68,7 +61,7 @@ function App() {
           <Route path='/register' element={<Register onSuccess={() => onAuthSuccess()} />} />
           <Route path='/login' element={<Login onSuccess={() => onAuthSuccess()} />} />
           <Route path='/account' element={<Account isCleaner={userInfo.isCleaner} userInfo={userInfo} />} />
-          <Route path='/book/:id' element={<CleanerBook />} />
+          <Route path='/book' element={<CleanerBook />} />
         </Routes>
       </div>
     );
