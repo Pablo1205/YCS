@@ -118,7 +118,7 @@ export default function Account({ isCleaner, userInfo }: { isCleaner: number, us
                  */}
                 <div className="select-container">
                     <Button style={{ marginRight: 10 }} onClick={() => setPreviousMonth()} variant="outline-primary">Previous month</Button>
-                    <p>{months[startDate.getMonth()]} {startDate.getFullYear()}</p>
+                    <div>{months[startDate.getMonth()]} {startDate.getFullYear()}</div>
                     <Button style={{ marginLeft: 10 }} onClick={() => setNextMonth()} variant="outline-primary">Next month</Button>
                 </div>
                 <div style={{ marginTop: 20, marginBottom: 10 }}>
