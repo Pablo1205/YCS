@@ -1,6 +1,7 @@
 import React from 'react'
 
-export default function CleanerCard() {
+export default function CleanerCard({ cleaner }: { cleaner: any }) {
+    console.log(cleaner)
     const nom = "Theret"
     const prenom = "Guillaume"
     const bio = "Salut test bio"
@@ -11,7 +12,7 @@ export default function CleanerCard() {
     return (
         <div style={{ width: "100%", border: "3px solid black", marginBottom: 10, marginTop: 10, borderRadius: "10px", overflow: "hidden", display: "flex", flexDirection: "row" }}>
             <div style={{ backgroundColor: "#107ACA", width: "40%", padding: "10px", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-                <p style={{ color: "white", fontWeight: "bold" }}>{prenom.toUpperCase()} {nom.toUpperCase()}</p>
+                <p style={{ color: "white", fontWeight: "bold" }}>{cleaner.firstName.toUpperCase()} {cleaner.lastname.toUpperCase()}</p>
                 <div style={{ width: "40%", padding: "4px", backgroundColor: "#0D4DFD", borderRadius: 1000 }}>
                     <img src={profilPicture} style={{ width: "100%", borderRadius: 1000, border: "1px solid black" }} />
                 </div>
