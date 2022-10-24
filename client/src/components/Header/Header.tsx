@@ -18,7 +18,7 @@ function Header({ isAuth, onSuccess }: { isAuth: boolean, onSuccess: (val: boole
   }
   if (isAuth) {
     return (
-      <div style={{ display: 'flex', justifyContent: "space-between", width: '100%', alignItems: "center" }}>
+      <div style={{ display: 'flex', justifyContent: "space-between", width: '100%', alignItems: "center", padding: "5px" }}>
         <img className="logo" height={80} width={80} src={"/logo.png"} alt="Logo" onClick={() => navigate("/home")} />
         <div>
           <a className="btn-header" onClick={() => navigate("/account")}>My account</a>
