@@ -15,7 +15,10 @@ export default function Home({ isAuth }: { isAuth: boolean }) {
   }, [isAuth]);
 
   const searchByCleaner = () => {
-    alert(`searching for, ${searchValue}`);
+    api.get(`/cleaner/getCleanerByNameOrUsername/${searchValue}/${searchValue}/${searchValue}`)
+      .then(response => {
+        setArrayCleaner(response.data)
+      })
   }
   const searchByCity = () => {
     api.get(`/cleaner/getCleanerByCity/${searchValueCity}`)
@@ -32,17 +35,17 @@ export default function Home({ isAuth }: { isAuth: boolean }) {
   }, [])
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <div style={{ backgroundColor: "#107ACA",width: "100%",paddingLeft: "20%" }}>
+    <div style={{ display: 'flex', flexDirection: 'column',alignItems: "center"}}>
+      <div style={{ backgroundColor: "#107ACA",width: "100%",paddingLeft: "25%" }}>
         <p style={{ color: "white", fontWeight: "bold", fontSize: 45 }}>Find an appointment with our cleaning staff</p>
-        <div style={{ display: "flex", flexDirection: "row" }}>
-          <div style={{ backgroundColor: "#107ACA", paddingLeft: "20%" }}>
-            <input type="text" value={searchValue} onChange={(e) => setSearchValue(e.target.value)} placeholder="Name or Username" />
-            <button onClick={() => searchByCleaner()}>Search By Cleaner</button>
+        <div style={{ display: "flex", width: "66%",justifyContent: "space-between"}}>
+          <div style={{ display: 'flex',backgroundColor: "#107ACA" ,height:"10%", width: "50%"}}>
+            <input type="text" value={searchValue} onChange={(e) => setSearchValue(e.target.value)} placeholder="Name or Username" style={{ border: "3px solid transparent",  borderRadius: "10px",width: "100%" }}/>
+            <button onClick={() => searchByCleaner()}  style={{ border: "3px solid black",  borderRadius: "10px", display: "flex", flexDirection: "row" }}>Search By Cleaner</button>
           </div>
-          <div>
-            <input type="text" value={searchValueCity} onChange={(e) => setSearchValueCity(e.target.value)} placeholder="City" />
-            <button onClick={() => searchByCity()} >Search By City</button>
+          <div style={{ display: 'flex',backgroundColor: "#107ACA" ,height:"10%",width: "50%"}}>
+            <input type="text" value={searchValueCity} onChange={(e) => setSearchValueCity(e.target.value)} placeholder="City" style={{ border: "3px solid transparent",  borderRadius: "10px",width: "100%" }}/>
+            <button onClick={() => searchByCity()} style={{ border: "3px solid black",  borderRadius: "10px", display: "flex", flexDirection: "row" }}>Search By City</button>
           </div>
         </div>
       </div>
