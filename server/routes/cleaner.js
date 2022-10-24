@@ -4,6 +4,7 @@ var mysql = require('mysql');
 var connection = require('../db');
 
 router.get('/available/:idCleaner/:year/:month', (req, res) => {
+    if (!req.user) return res.status(401).json({ message: "You are not authenticate" });
     const string = "SELECT cleanersSchedule.* FROM cleanersSchedule JOIN users ON cleanersSchedule.idCleaner = users.id WHERE users.id = ? AND cleanersSchedule.year = ? AND cleanersSchedule.month = ?;"
     const inserts = [parseInt(req.params.idCleaner), req.params.year, req.params.month];
     const sql = mysql.format(string, inserts);
@@ -14,7 +15,7 @@ router.get('/available/:idCleaner/:year/:month', (req, res) => {
 })
 
 router.post('/setAvailable', (req, res, next) => {
-    if (!req.user) return res.status(401).json({ message: "You are not authenticate" });
+    if (!req.user) return res.status(401).json({ message: "You are not authenticated" });
     if (req.user.isCleaner !== 1) return res.status(403).json({ message: "You are not allowed to do that" });
     const userId = parseInt(req.user.id);
     req.body.availableDate.forEach(value => {
@@ -40,6 +41,7 @@ router.post('/setAvailable', (req, res, next) => {
 })
 
 router.get('/seeAllCleaners', (req, res) => {
+    if (!req.user) return res.status(401).json({ message: "You are not authenticate" });
     connection.query(`SELECT users.username , users.firstName, users.lastName, users.id, users.city, users.bio, users.joinDate, users.profilPicture, users.rayon FROM users WHERE users.isCleaner=1`, async (error, results) => {
         if (error) throw error;
         res.send(results)
@@ -47,6 +49,7 @@ router.get('/seeAllCleaners', (req, res) => {
 })
 
 router.get('/getCleanerByNameOrUsername/:value', (req, res) => {
+    if (!req.user) return res.status(401).json({ message: "You are not authenticate" });
     const value = req.params.value + "%";
     connection.query(`SELECT users.username , users.firstName, users.lastName FROM users WHERE (users.firstName LIKE ? OR users.lastName LIKE ?) AND users.isCleaner=1`, [value, value], async (error, results) => {
         if (error) throw error;
@@ -55,6 +58,7 @@ router.get('/getCleanerByNameOrUsername/:value', (req, res) => {
 })
 
 router.post('/addCleanerStatus/:city/:id', (req, res) => {
+    if (!req.user) return res.status(401).json({ message: "You are not authenticate" });
     const stringSelect = "SELECT users.isCleaner FROM users WHERE users.id = ? ;"
     const stringUpdate = "UPDATE users SET users.isCleaner=1 WHERE users.id = ? ;"
     const inserts = [req.params.id];
@@ -75,6 +79,7 @@ router.post('/addCleanerStatus/:city/:id', (req, res) => {
 })
 
 router.post('/deleteCleanerStatus/:id', (req, res) => {
+    if (!req.user) return res.status(401).json({ message: "You are not authenticate" });
     const stringSelect = "SELECT users.isCleaner FROM users WHERE users.id = ? ;"
     const stringUpdate = "UPDATE users SET users.isCleaner=0 WHERE users.id = ? ;"
     const inserts = [req.params.id];
@@ -95,6 +100,7 @@ router.post('/deleteCleanerStatus/:id', (req, res) => {
 })
 
 router.post('/updateUserCity/:city/:id', (req, res) => {
+    if (!req.user) return res.status(401).json({ message: "You are not authenticate" });
     connection.query("UPDATE users SET users.city= ? WHERE users.id = ? ;", [req.params.city, req.params.id], async (error, results) => {
         res.send({ message: 'User city updated' })
         console.log({ message: 'User city updated' })
@@ -103,6 +109,7 @@ router.post('/updateUserCity/:city/:id', (req, res) => {
 })
 
 router.get('/getCleanerByCity/:city', (req, res) => {
+    if (!req.user) return res.status(401).json({ message: "You are not authenticate" });
     const city = req.params.city + "%";
     connection.query(`SELECT users.username , users.firstName, users.lastname, users.id, users.city, users.bio, users.joinDate, users.profilPicture, users.rayon FROM users WHERE (users.isCleaner=1 AND users.city LIKE ? )`, [city], async (error, results) => {
         if (error) throw error;
@@ -117,6 +124,7 @@ router.get('/getCleanerByCity/:city', (req, res) => {
 })
 
 router.post('/updateUserCity/:city/:id', (req, res) => {
+    if (!req.user) return res.status(401).json({ message: "You are not authenticate" });
     connection.query("UPDATE users SET users.city= ? WHERE users.id = ? ;", [req.params.city, req.params.id], async (error, results) => {
         res.send({ message: 'User city updated' })
         console.log({ message: 'User city updated' })
@@ -161,6 +169,7 @@ router.post('/updateUserCity/:city/:id', (req, res) => {
 
 
 router.delete('/deleteProposal/:idProposal', (req, res) => {
+    if (!req.user) return res.status(401).json({ message: "You are not authenticate" });
     connection.query(`DELETE FROM acceptedProposal WHERE acceptedProposal.idProposal= ?`, [req.params.idProposal], async (err, results, fields) => {
         res.send({ message: 'Proposal removed' })
         console.log({ message: 'Proposal removed' })
@@ -171,15 +180,15 @@ router.delete('/deleteProposal/:idProposal', (req, res) => {
 //SELECT * FROM cleanersSchedule WHERE day LIKE '2022-10-01 __:__:__'
 
 router.get('/bookCleaner/:id/:date', (req, res) => {
-
+    if (!req.user) return res.status(401).json({ message: "You are not authenticated" });
     //check day : modifier format de req.params.date, l'adatper au format envoyé en URL 
     //SELECT * FROM acceptedProposal WHERE idDay = "2022-10-22" AND (StartDateTime > "2022-10-22 11:30:00" > EndDateTime) AND idCleaner=2
-    connection.query(`SELECT * FROM cleanersSchedule WHERE day LIKE '? __:__:__' AND idCleaner= ?`, [req.params.date,req.params.id], async (err, results, fields) => {
+    connection.query(`SELECT * FROM cleanersSchedule WHERE day LIKE '? __:__:__' AND idCleaner= ?`, [req.params.date, req.params.id], async (err, results, fields) => {
         if (err) { return res.status(409).json({ message: 'Cleaner is not available on this date' }) } // verifier code erreur
         else {
 
             //check hour : modifier format de req.params.date, l'adatper au format envoyé en URL ::: attention ici on veut que le select ne retourne rien 
-            connection.query(`SELECT * FROM cleanersSchedule WHERE day LIKE '? __:__:__' AND idCleaner= ?`, [req.params.date,req.params.id], async (err, results, fields) => {
+            connection.query(`SELECT * FROM cleanersSchedule WHERE day LIKE '? __:__:__' AND idCleaner= ?`, [req.params.date, req.params.id], async (err, results, fields) => {
                 if (err) { return res.status(409).json({ message: 'Cleaner is not available on this date' }) } // verifier code erreur
                 else {
                     // insert nouvel accepted proposal 
@@ -220,7 +229,7 @@ router.get('/bookCleaner/:id/:date', (req, res) => {
         }
     })
 
-    
+
 
 
 

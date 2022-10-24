@@ -3,7 +3,7 @@ import Button from 'react-bootstrap/Button';
 import { useNavigate } from "react-router-dom";
 
 
-export default function CleanerCard({ cleaner }: { cleaner: cleaner }) {
+export default function CleanerCard({ cleaner, displayButton }: { cleaner: cleaner, displayButton: boolean }) {
     const navigate = useNavigate();
     const profilPicture = "";
     const redirectToProfil = () => {
@@ -22,10 +22,12 @@ export default function CleanerCard({ cleaner }: { cleaner: cleaner }) {
                 <p style={{ fontWeight: "bold" }}>Bio</p>
                 <p>{cleaner.bio}</p>
                 <div style={{ display: "flex", width: "100%", flexDirection: "row", justifyContent: "space-around", alignItems: "center" }}>
-                    <Button style={{ marginLeft: 10 }} onClick={() => redirectToProfil()} variant="outline-primary">Book</Button>
+                    {displayButton &&
+                        <Button style={{ marginLeft: 10 }} onClick={() => redirectToProfil()} variant="outline-primary">Book</Button>
+                    }
                     <div>Joined : {new Date(cleaner.joinDate).toLocaleDateString("fr-FR")}</div>
                 </div>
             </div>
-        </div >
+        </div>
     )
 }

@@ -71,7 +71,7 @@ export default function Home({ isAuth }: { isAuth: boolean }) {
         {arrayCleaner.length !== 0 && arrayCleaner.map((cleaner, index) => {
           return (
             <div key={index} style={{ minWidth: "45%" }}>
-              <CleanerCard cleaner={cleaner} />
+              <CleanerCard cleaner={cleaner} displayButton />
             </div>
           )
         })}
