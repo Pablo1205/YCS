@@ -24,7 +24,23 @@ export default function CleanerBook() {
     return (
         <div>
             <CleanerCard cleaner={cleaner} displayButton={false} />
-            <div style={{fontWeight: 'bold', textAlign: 'center', fontSize: "2rem"}}>Here are the next availabilities for {cleaner.firstName} </div>
-        </div>
+            {cleanerDate.length > 0 ?
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <div style={{ fontWeight: 'bold', textAlign: 'center', fontSize: "2rem" }}>Here are the next availabilities for {cleaner.firstName} </div>
+                    <div style={{ display: 'flex', flexDirection: "row", flexWrap: 'wrap', maxWidth: 1000, justifyContent: 'center' }}>
+                        {cleanerDate.map((available, index) => {
+                            return (
+                                <div key={index} onClick={() => setIdSelected(index)} style={{ padding: 10, backgroundColor: idSelected === index ? "red" : "#0D6EFD", margin: 5, width: 100, alignItems: "center", height: 50, borderRadius: 5 }}>
+                                    <p style={{ color: "white", fontWeight: "bold", textAlign: "center" }}>{new Date(available.day).getDate()}</p>
+                                </div>
+                            )
+                        })}
+                    </div>
+                </div>
+                :
+                <div style={{ fontWeight: 'bold', textAlign: 'center', fontSize: "2rem" }}>{cleaner.firstName} has no date available for this month </div>
+            }
+
+        </div >
     )
 }
