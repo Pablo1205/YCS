@@ -177,6 +177,10 @@ router.delete('/deleteProposal/:idProposal', (req, res) => {
     })
 })
 
+router.get('/getAvailableByMonth/:idCleaner/:month', (req, res) => {
+    if (!req.user) return res.status(401).json({ message: "You are not authenticated" });
+    connection.query()
+})
 //SELECT * FROM cleanersSchedule WHERE day LIKE '2022-10-01 __:__:__'
 
 router.get('/bookCleaner/:id/:date', (req, res) => {
