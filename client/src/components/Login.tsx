@@ -8,9 +8,8 @@ import api from "../api/api.js";
 export default function Login({ onSuccess }: { onSuccess: (val: boolean) => void }) {
     const [password, setPassword] = useState<string>("");
     const [username, setUsername] = useState<string>("");
+    const [error, setError] = useState<string>("");
     const navigate = useNavigate();
-
-    const [error, setError] = useState("");
 
     const sendFormulaire = () => {
         api.post("/auth/login", {
@@ -20,9 +19,7 @@ export default function Login({ onSuccess }: { onSuccess: (val: boolean) => void
             .then((res) => {
                 onSuccess(true);
             })
-            .catch((err) => {
-                setError(err.message);
-            })
+            .catch((err) => setError("Wrong mail or password"))
     }
     return (
         <div style={{ alignSelf: "center", width: 500, marginLeft: "auto", marginRight: "auto" }}>
