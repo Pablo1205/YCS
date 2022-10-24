@@ -10,7 +10,7 @@ import api from "../../api/api";
 
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-export default function Account({ isCleaner, userInfo }: { isCleaner: number, userInfo: any }) {
+export default function Account({ isCleaner, userInfo }: { isCleaner: number, userInfo: userInfo }) {
     const [startDate, setStartDate] = useState<Date>(new Date());
     const [availableDate, setAvailableDate] = useState<Array<displayDate>>([]);
     /*
