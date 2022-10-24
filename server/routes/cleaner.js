@@ -27,7 +27,7 @@ router.post('/setAvailable', (req, res, next) => {
             if (error) throw error;
             if (value.isSelected && results.length === 0) {
                 const insertString = "INSERT INTO cleanersSchedule(day, idCleaner, month, year) VALUES (?,?,?,?)";
-                connection.query(insertString, [date, userId, req.body.month, req.body.year], async (err, res2, fields) => {
+                connection.query(insertString, [date, userId, date.getMonth(), date.getFullYear()], async (err, res2, fields) => {
                     if (err) throw err;
                 })
             } else if (!value.isSelected && results.length > 0) {
@@ -70,9 +70,7 @@ router.post('/addCleanerStatus/:city/:id', (req, res) => {
             return res.status(409).json({ message: 'User doesnt exist' })
         } else {
             connection.query(sqlUpdate, async (err, results2) => {
-                res.send({ message: 'Cleaner Status added' })
-                console.log({ message: 'Cleaner Status added' })
-                return results2
+                return res.send({ message: 'Cleaner Status added' })
             })
         }
     })
@@ -91,9 +89,7 @@ router.post('/deleteCleanerStatus/:id', (req, res) => {
             return res.status(409).json({ message: 'User doesnt exist' })
         } else {
             connection.query(sqlUpdate, async (err, results2) => {
-                res.send({ message: 'Cleaner Status removed' })
-                console.log({ message: 'Cleaner Status removed' })
-                return results2
+                return res.send({ message: 'Cleaner Status removed' })
             })
         }
     })
@@ -102,9 +98,7 @@ router.post('/deleteCleanerStatus/:id', (req, res) => {
 router.post('/updateUserCity/:city/:id', (req, res) => {
     if (!req.user) return res.status(401).json({ message: "You are not authenticate" });
     connection.query("UPDATE users SET users.city= ? WHERE users.id = ? ;", [req.params.city, req.params.id], async (error, results) => {
-        res.send({ message: 'User city updated' })
-        console.log({ message: 'User city updated' })
-        return results
+        return res.send({ message: 'User city updated' })
     })
 })
 
@@ -113,22 +107,14 @@ router.get('/getCleanerByCity/:city', (req, res) => {
     const city = req.params.city + "%";
     connection.query(`SELECT users.username , users.firstName, users.lastname, users.id, users.city, users.bio, users.joinDate, users.profilPicture, users.rayon FROM users WHERE (users.isCleaner=1 AND users.city LIKE ? )`, [city], async (error, results) => {
         if (error) throw error;
-        if (results.length == 0) {
-            return res.status(409).json({ message: 'No cleaner in this area' })
-        } else {
-            res.send(results)
-            console.log(results)//this 
-            return results
-        }
+        return res.send(results)
     })
 })
 
 router.post('/updateUserCity/:city/:id', (req, res) => {
     if (!req.user) return res.status(401).json({ message: "You are not authenticate" });
     connection.query("UPDATE users SET users.city= ? WHERE users.id = ? ;", [req.params.city, req.params.id], async (error, results) => {
-        res.send({ message: 'User city updated' })
-        console.log({ message: 'User city updated' })
-        return results
+        return res.status(200).json({ message: 'User city updated' })
     })
 })
 
@@ -171,15 +157,18 @@ router.post('/updateUserCity/:city/:id', (req, res) => {
 router.delete('/deleteProposal/:idProposal', (req, res) => {
     if (!req.user) return res.status(401).json({ message: "You are not authenticate" });
     connection.query(`DELETE FROM acceptedProposal WHERE acceptedProposal.idProposal= ?`, [req.params.idProposal], async (err, results, fields) => {
-        res.send({ message: 'Proposal removed' })
-        console.log({ message: 'Proposal removed' })
-        return results
+        return res.status(200).json({ message: 'Proposal removed' })
     })
 })
 
-router.get('/getAvailableByMonth/:idCleaner/:month', (req, res) => {
+// permet de récuperer les dispos d'un cleaner
+router.get('/getAvailableByMonth/:idCleaner/:year/:month', (req, res) => {
+
+    console.log(req.params.year, req.params.month)
     if (!req.user) return res.status(401).json({ message: "You are not authenticated" });
-    connection.query()
+    connection.query(`SELECT * from cleanersSchedule WHERE month=? AND year=? AND idCleaner=? `, [req.params.month, req.params.year, req.params.idCleaner], async (err, results, fields) => {
+        return res.status(200).json(results)
+    })
 })
 //SELECT * FROM cleanersSchedule WHERE day LIKE '2022-10-01 __:__:__'
 
