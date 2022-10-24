@@ -9,10 +9,6 @@ import "./Account.css"
 import api from "../../api/api";
 
 const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-interface displayDate {
-    date: Date;
-    isSelected: boolean;
-}
 
 export default function Account({ isCleaner, userInfo }: { isCleaner: number, userInfo: any }) {
     const [startDate, setStartDate] = useState<Date>(new Date());

@@ -68,9 +68,9 @@ export default function Home({ isAuth }: { isAuth: boolean }) {
         </div>
       </div>
       <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", width: "90%" }}>
-        {arrayCleaner.length !== 0 && arrayCleaner.map(cleaner => {
+        {arrayCleaner.length !== 0 && arrayCleaner.map((cleaner, index) => {
           return (
-            <div key={cleaner} style={{ minWidth: "45%" }}>
+            <div key={index} style={{ minWidth: "45%" }}>
               <CleanerCard cleaner={cleaner} />
             </div>
           )

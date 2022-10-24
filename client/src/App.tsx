@@ -13,13 +13,6 @@ import api from "./api/api";
 
 import "./App.css";
 
-interface userInfo {
-  username: string;
-  isCleaner: number;
-  email: string;
-  id: number;
-}
-
 function App() {
   const [isAuth, setIsAuth] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
