@@ -7,7 +7,7 @@ export default function CleanerCard({ cleaner }: { cleaner: cleaner }) {
     const navigate = useNavigate();
     const profilPicture = "";
     const redirectToProfil = () => {
-        navigate("/book/" + cleaner.id, { state: { cleaner: cleaner } });
+        navigate("/book/", { state: { cleaner: cleaner } });
     }
     return (
         <div style={{ width: "100%", border: "3px solid black", marginBottom: 10, marginTop: 10, borderRadius: "10px", overflow: "hidden", display: "flex", flexDirection: "row" }}>
