@@ -193,7 +193,7 @@ router.get('/getAvailableByDay/:idCleaner/:year/:month/:day', (req, res) => {
                 })
                 arrayAvailableDate.push(returnDate)
             }
-            return res.status(200).json(results2)
+            return res.status(200).json(arrayAvailableDate)
         })
 
     })
