@@ -162,12 +162,40 @@ router.delete('/deleteProposal/:idProposal', (req, res) => {
 })
 
 // permet de récuperer les dispos d'un cleaner
-router.get('/getAvailableByMonth/:idCleaner/:year/:month', (req, res) => {
+router.get('/getAvailableByDay/:idCleaner/:year/:month/:day', (req, res) => {
 
-    console.log(req.params.year, req.params.month)
     if (!req.user) return res.status(401).json({ message: "You are not authenticated" });
-    connection.query(`SELECT * from cleanersSchedule WHERE month=? AND year=? AND idCleaner=? `, [req.params.month, req.params.year, req.params.idCleaner], async (err, results, fields) => {
-        return res.status(200).json(results)
+    const newDate = new Date(req.params.year, req.params.month, req.params.day);
+    newDate.setHours(8, 0, 0);
+    connection.query(`SELECT * from cleanersSchedule WHERE day=? AND idCleaner=? `, [newDate, req.params.idCleaner], async (err, results, fields) => {
+        if (err) throw err;
+        // le cleaner est pas dispo on return direct
+        //8 8.30 9 9.30 10 10.30 11 11.30 13 13.30 14 14.30 15 15.30 16 16.30 17 17.30
+        if (results.length === 0) return res.status(200).json(results)
+        connection.query("SELECT StartDateTime from acceptedProposal WHERE idCleaner=? AND idDay=?", [req.params.idCleaner, newDate], async (err, results2, fields) => {
+            if (err) throw err;
+            const arrayAvailableDate = [];
+            for (let index = 0; index < 18; index++) {
+                let newDatePlus30;
+                if (index === 0) {
+                    newDatePlus30 = newDate;
+                } else {
+                    newDatePlus30 = new Date(arrayAvailableDate[index - 1].date.getTime() + 30 * 60000);
+                }
+                const returnDate = {
+                    date: newDatePlus30,
+                    available: true,
+                }
+                results2.forEach(bookedDate => {
+                    if (bookedDate.StartDateTime.getTime() === newDatePlus30.getTime()) {
+                        returnDate.available = false;
+                    }
+                })
+                arrayAvailableDate.push(returnDate)
+            }
+            return res.status(200).json(results2)
+        })
+
     })
 })
 //SELECT * FROM cleanersSchedule WHERE day LIKE '2022-10-01 __:__:__'
