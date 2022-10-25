@@ -105,7 +105,7 @@ router.post('/updateUserCity/:city/:id', (req, res) => {
 router.get('/getCleanerByCity/:city', (req, res) => {
     if (!req.user) return res.status(401).json({ message: "You are not authenticate" });
     const city = req.params.city + "%";
-    connection.query(`SELECT users.username , users.firstName, users.lastname, users.id, users.city, users.bio, users.joinDate, users.profilPicture, users.rayon FROM users WHERE (users.isCleaner=1 AND users.city LIKE ? )`, [city], async (error, results) => {
+    connection.query(`SELECT users.username , users.firstName, users.lastName, users.id, users.city, users.bio, users.joinDate, users.profilPicture, users.rayon FROM users WHERE (users.isCleaner=1 AND users.city LIKE ? )`, [city], async (error, results) => {
         if (error) throw error;
         return res.send(results)
     })
@@ -155,9 +155,18 @@ router.post('/updateUserCity/:city/:id', (req, res) => {
 
 
 router.delete('/deleteProposal/:idProposal', (req, res) => {
-    if (!req.user) return res.status(401).json({ message: "You are not authenticate" });
+    if (!req.user) return res.status(401).json({ message: "You are not authenticated" });
     connection.query(`DELETE FROM acceptedProposal WHERE acceptedProposal.idProposal= ?`, [req.params.idProposal], async (err, results, fields) => {
         return res.status(200).json({ message: 'Proposal removed' })
+    })
+})
+
+router.get('/getAllProposals', (req, res) => {
+    if (!req.user) return res.status(401).json({ message: "You are not authenticated" });
+    if (req.user.isCleaner === 0) return res.status(401).json({ message: "Not allowed" })
+
+    connection.query("SELECT acceptedProposal.*, users.lastName, users.firstName, users.city, users.profilPicture, users.address  FROM acceptedProposal JOIN users ON users.id = acceptedProposal.idUser WHERE idCleaner=?", [req.user.id], async (err, results, fields) => {
+        return res.status(200).json(results);
     })
 })
 
@@ -200,63 +209,33 @@ router.get('/getAvailableByDay/:idCleaner/:year/:month/:day', (req, res) => {
 })
 //SELECT * FROM cleanersSchedule WHERE day LIKE '2022-10-01 __:__:__'
 
-router.get('/bookCleaner/:id/:date', (req, res) => {
+router.post('/bookCleaner', async (req, res) => {
     if (!req.user) return res.status(401).json({ message: "You are not authenticated" });
-    //check day : modifier format de req.params.date, l'adatper au format envoyé en URL 
-    //SELECT * FROM acceptedProposal WHERE idDay = "2022-10-22" AND (StartDateTime > "2022-10-22 11:30:00" > EndDateTime) AND idCleaner=2
-    connection.query(`SELECT * FROM cleanersSchedule WHERE day LIKE '? __:__:__' AND idCleaner= ?`, [req.params.date, req.params.id], async (err, results, fields) => {
-        if (err) { return res.status(409).json({ message: 'Cleaner is not available on this date' }) } // verifier code erreur
-        else {
-
-            //check hour : modifier format de req.params.date, l'adatper au format envoyé en URL ::: attention ici on veut que le select ne retourne rien 
-            connection.query(`SELECT * FROM cleanersSchedule WHERE day LIKE '? __:__:__' AND idCleaner= ?`, [req.params.date, req.params.id], async (err, results, fields) => {
-                if (err) { return res.status(409).json({ message: 'Cleaner is not available on this date' }) } // verifier code erreur
-                else {
-                    // insert nouvel accepted proposal 
-                    /*connection.query(`SELECT users.isCleaner FROM users WHERE users.id = ? ;`, [req.params.id], async (err, results, fields) => {
-                        if (err) { return res.status(409).json({ message: 'User cant book a cleaner has he/she has cleaner status' }) }
-                        else {
-                            const idCleaner = req.body.idCleaner;
-                            const idDay = req.body.idDay;
-                            const address = req.body.address;
-                            const StartDateTime = req.body.StartDateTime;
-                            const EndDateTime = req.body.EndDateTime;
-                
-                            if (idCleaner.length == 0) {
-                                return res.status(409).json({ message: 'Il manque un cleaner' })
-                            }
-                            if (idDay.length == 0) {
-                                return res.status(409).json({ message: 'Il manque un jour' })
-                            }
-                            if (address.length == 0) {
-                                return res.status(409).json({ message: 'Il manque une adresse' })
-                            }
-                            if (StartDateTime.length == 0) {
-                                return res.status(409).json({ message: 'Il manque une heure de début' })
-                            }
-                            if (EndDateTime.length == 0) {
-                                return res.status(409).json({ message: 'Il manque une  heure de fin' })
-                            }
-                
-                            connection.query(`INSERT INTO acceptedProposal (idUser, idCleaner, idDay, address, StartDateTime , EndDateTime) VALUES(?,?,?,?,?,?)`, [req.params.id, idCleaner, idDay, address, StartDateTime, EndDateTime], async (err, results2, fields) => {
-                                res.send(results2)
-                                console.log({ message: 'Proposal added' })
-                                return results2
-                            })
-                        }
-                    })*/
-                }
+    const selectedDate = req.body.arrayDate;
+    if (selectedDate.length === 0) return res.status(401).json({ message: "Did you book anything ?" });
+    const firstDate = new Date(selectedDate[0]);
+    firstDate.setHours(8, 0, 0);
+    const allPromises = selectedDate.map(bookedDate => {
+        //théoriquement il faudrait recheck que ca n'existe pas déja
+        return new Promise((resolve, reject) => {
+            connection.query("INSERT INTO acceptedProposal (idCleaner,idDay,idUser,StartDateTime) VALUES(?,?,?,?)", [req.body.idCleaner, firstDate, req.user.id, new Date(bookedDate)], (err, res, fields) => {
+                if (err) reject(err);
+                resolve()
             })
-        }
+        })
+
     })
+    await Promise.all(allPromises)
+        .then(() => {
+            res.status(200).json({ message: "Booked sucessfully !" });
+        })
+        .catch(err => {
+            res.status(200).json({ message: "Error please try again" });
+        })
 
-
-
-
-
-
-
+    //connection.query("INSERT INTO acceptedProposal (idCleaner,idDay,adress,StartDateTime) VALUES(?,?,?,?)",)
 })
+
 
 const mailValidation = (mail) => {
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
