@@ -14,7 +14,7 @@ export default function CleanerBook() {
     const { state } = useLocation();
     const cleaner = state.cleaner;
     const [cleanerDate, setCleanerDate] = useState<Array<any>>([]);
-    const [idSelected, setIdSelected] = useState<Array<number>>([]);
+    const [idSelected, setIdSelected] = useState<Array<Date>>([]);
 
     const [showModal, setShowModal] = useState<boolean>(false);
 
@@ -26,6 +26,7 @@ export default function CleanerBook() {
     const [selectedDate, setSelectedDate] = useState<Date>(baseDatePlusOne);
     const todayDate = baseDatePlusOne;
     const [error, setError] = useState<string>("");
+    const [confirmModalMessage, setConfirmModalMessage] = useState<string>("")
 
 
     const getCleanerAgenda = () => {
@@ -53,50 +54,80 @@ export default function CleanerBook() {
         var newDate = new Date(selectedDate.setDate(selectedDate.getDate() + 1));
         setSelectedDate(newDate);
     }
-    const setSelected = (index: number) => {
+    const setSelected = (date: Date) => {
         setIdSelected(oldArray => {
-            console.log(oldArray.includes(index))
-            if (oldArray.includes(index)) {
-                return oldArray.filter(item => item !== index);
+            console.log(oldArray.includes(date))
+            if (oldArray.includes(date)) {
+                return oldArray.filter(item => item !== date);
             } else {
-                return [...oldArray, index];
+                return [...oldArray, date];
             }
         })
     }
     const validate = () => {
         setLoading(true);
+        api.post("/cleaner/bookCleaner", {
+            arrayDate: idSelected,
+            idCleaner: cleaner.id
+        })
+            .then(response => {
+                setLoading(false);
+                setConfirmModalMessage(response.data.message);
+                setSelectedDate(baseDate);
+            })
+            .catch(err => setLoading(false));
     }
     const shouldShowModal = () => {
         if (idSelected.length === 0) return setError("Did you book anything ?")
         setShowModal(true)
     }
+    const closeModal = () => {
+        setLoading(false);
+        setShowModal(false);
+    }
+    const isSelected = (date: Date) => {
+        let found = false;
+        idSelected.forEach(value => {
+            if (value.getTime() === date.getTime()) {
+                found = true;
+            }
+        })
+        return found;
+    }
     return (
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <Modal show={showModal} onHide={() => setShowModal(false)}>
+            <Modal show={showModal} onHide={() => closeModal()}>
                 <Modal.Header closeButton>
                     <Modal.Title>Confirmation</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <p>Are you sure to book {cleaner.firstName} {cleaner.lastName} ?</p>
-                    <p>Total Cost is : {idSelected.length * 30}€ </p>
+                    {confirmModalMessage === "" ? (
+                        <div><p>Are you sure to book {cleaner.firstName} {cleaner.lastName} ?</p>
+                            <p>Total Cost is : {idSelected.length * 30}€ </p></div>
+                    ) : (
+                        <p>{confirmModalMessage}</p>
+                    )}
 
                 </Modal.Body>
                 <Modal.Footer>
-                    <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around", width: "100%" }}>
-                        {loading === true ? (
-                            <Spinner animation="border" variant="primary" />
-                        ) : (
-                            <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around", width: "100%" }}>
-                                <Button variant="secondary" onClick={() => setShowModal(false)}>
-                                    Cancel
-                                </Button>
-                                <Button variant="primary" onClick={() => validate()}>
-                                    Yes !
-                                </Button>
-                            </div>
-                        )}
+                    {confirmModalMessage === "" &&
+                        <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around", width: "100%" }}>
+                            {loading === true ? (
+                                <Spinner animation="border" variant="primary" />
+                            ) : (
+                                <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around", width: "100%" }}>
+                                    <Button variant="secondary" onClick={() => closeModal()}>
+                                        Cancel
+                                    </Button>
+                                    <Button variant="primary" onClick={() => validate()}>
+                                        Yes !
+                                    </Button>
+                                </div>
+                            )}
 
-                    </div>
+                        </div>
+                    }
+
                 </Modal.Footer>
             </Modal>
             <CleanerCard cleaner={cleaner} displayButton={false} />
@@ -118,7 +149,7 @@ export default function CleanerBook() {
                                 const date = new Date(value.date);
                                 if (value.available) {
                                     return (
-                                        <div key={index} onClick={() => setSelected(index)} style={{ padding: 10, backgroundColor: idSelected.includes(index) === true ? "red" : "#0D6EFD", margin: 5, width: 100, alignItems: "center", height: 50, borderRadius: 5 }}>
+                                        <div key={index} onClick={() => setSelected(date)} style={{ padding: 10, backgroundColor: isSelected(date) === true ? "red" : "#0D6EFD", margin: 5, width: 100, alignItems: "center", height: 50, borderRadius: 5 }}>
                                             <p style={{ color: "white", fontWeight: "bold", textAlign: "center" }}> {date.getHours()}h{date.getMinutes() === 0 ? "00" : "30"} </p>
                                         </div>
                                     )

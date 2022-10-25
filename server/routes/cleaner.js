@@ -165,10 +165,18 @@ router.get('/getAllProposals', (req, res) => {
     if (!req.user) return res.status(401).json({ message: "You are not authenticated" });
     if (req.user.isCleaner === 0) return res.status(401).json({ message: "Not allowed" })
 
-    connection.query("SELECT acceptedProposal.*, users.lastName, users.firstName, users.city, users.profilPicture, users.address  FROM acceptedProposal JOIN users ON users.id = acceptedProposal.idUser WHERE idCleaner=?", [req.user.id], async (err, results, fields) => {
+    connection.query("SELECT acceptedProposal.*, users.lastName, users.firstName, users.city, users.profilPicture, users.address  FROM acceptedProposal JOIN users ON users.id = acceptedProposal.idUser WHERE idCleaner=? ORDER BY acceptedProposal.StartDateTime ASC;", [req.user.id], async (err, results, fields) => {
         return res.status(200).json(results);
     })
 })
+
+router.get('/getClientProposals', (req, res) => {
+    if (!req.user) return res.status(401).json({ message: "You are not authenticated" });
+    connection.query("SELECT acceptedProposal.*, users.lastName, users.firstName, users.city, users.profilPicture, users.address FROM acceptedProposal JOIN users ON users.id = acceptedProposal.idCleaner WHERE idUser=? ORDER BY acceptedProposal.StartDateTime ASC;", [req.user.id], async (err, results, fields) => {
+        return res.status(200).json(results);
+    })
+})
+
 
 // permet de récuperer les dispos d'un cleaner
 router.get('/getAvailableByDay/:idCleaner/:year/:month/:day', (req, res) => {

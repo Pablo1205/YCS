@@ -13,6 +13,7 @@ const months = ["January", "February", "March", "April", "May", "June", "July", 
 export default function Account({ isCleaner, userInfo }: { isCleaner: number, userInfo: userInfo }) {
     const [startDate, setStartDate] = useState<Date>(new Date());
     const [availableDate, setAvailableDate] = useState<Array<displayDate>>([]);
+    const [proposal, setProposal] = useState<Array<any>>([]);
     /*
     useEffect(() => {
         const today = new Date();
@@ -41,7 +42,7 @@ export default function Account({ isCleaner, userInfo }: { isCleaner: number, us
             date.setHours(8);
             days.push(new Date(date));
             date.setDate(date.getDate() + 1);
-            
+
         }
         return days;
     }
@@ -69,6 +70,7 @@ export default function Account({ isCleaner, userInfo }: { isCleaner: number, us
     }
     useEffect(() => {
         fetchAvailable()
+        fetchProposal();
     }, [startDate])
 
     const setNextMonth = () => {
@@ -93,6 +95,15 @@ export default function Account({ isCleaner, userInfo }: { isCleaner: number, us
         })
         setAvailableDate(newArray);
     }
+    const fetchProposal = () => {
+        console.log('api')
+        const stringApi = isCleaner === 1 ? "getAllProposals" : "getClientProposals"
+        api.get("/cleaner/" + stringApi)
+            .then(response => {
+                setProposal(response.data)
+                console.log(response.data)
+            })
+    }
 
     const confirm = () => {
         const body = {
@@ -100,18 +111,28 @@ export default function Account({ isCleaner, userInfo }: { isCleaner: number, us
             month: startDate.getMonth(),
             year: startDate.getFullYear()
         }
-        console.log(availableDate);
         api.post('/cleaner/setAvailable', body);
     }
     if (isCleaner === 1) {
         return (
             <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
+                <h1>Your future time slots</h1>
+                {proposal.length > 0 &&
+                    <div style={{ width: '100%' }}>
+                        {proposal.map(val => {
+                            const date = new Date(val.StartDateTime);
+                            return (
+                                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around', border: "1px solid black", marginTop: 10, marginBottom: 10, padding: 5 }}>
+                                    <div>{date.toLocaleDateString()} {date.getHours()}H{date.getMinutes() === 0 ? "00" : "30"} </div>
+                                    <div>{val.lastName} {val.firstName}</div>
+                                    <div>{val.city} {val.address}</div>
+
+                                </div>
+                            )
+                        })}
+                    </div>
+                }
                 <h1>Your availability</h1>
-                {/*
-                <div>
-                    <DatePicker selected={startDate} onChange={(date: Date) => setStartDate(date)} />
-                </div>
-                 */}
                 <div className="select-container">
                     <Button style={{ marginRight: 10 }} onClick={() => setPreviousMonth()} variant="outline-primary">Previous month</Button>
                     <div>{months[startDate.getMonth()]} {startDate.getFullYear()}</div>
@@ -123,11 +144,14 @@ export default function Account({ isCleaner, userInfo }: { isCleaner: number, us
                 </div>
                 <div style={{ display: 'flex', flexDirection: "row", flexWrap: 'wrap', maxWidth: 1000, justifyContent: 'center' }}>
                     {availableDate.map((available, index) => {
-                        return (
-                            <div key={index} onClick={() => setSelected(index)} style={{ padding: 10, backgroundColor: available.isSelected === false ? "red" : "#0D6EFD", margin: 5, width: 100, alignItems: "center", height: 50, borderRadius: 5 }}>
-                                <p style={{ color: "white", fontWeight: "bold", textAlign: "center" }}>{available.date.getDate()}</p>
-                            </div>
-                        )
+                        if (available.date.getTime() > new Date().getTime()) {
+                            return (
+                                <div key={index} onClick={() => setSelected(index)} style={{ padding: 10, backgroundColor: available.isSelected === false ? "red" : "#0D6EFD", margin: 5, width: 100, alignItems: "center", height: 50, borderRadius: 5 }}>
+                                    <p style={{ color: "white", fontWeight: "bold", textAlign: "center" }}>{available.date.getDate()}</p>
+                                </div>
+                            )
+                        }
+
                     })}
                     {availableDate.length === 0 &&
                         <p>No time slot available for this date. Try another day</p>
@@ -141,7 +165,24 @@ export default function Account({ isCleaner, userInfo }: { isCleaner: number, us
         )
     } else {
         return (
-            <></>
+            <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
+                <h1>My appointment</h1>
+                {proposal.length > 0 &&
+                    <div style={{ width: '100%' }}>
+                        {proposal.map(val => {
+                            const date = new Date(val.StartDateTime);
+                            return (
+                                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around', border: "1px solid black", marginTop: 10, marginBottom: 10, padding: 5 }}>
+                                    <div>{date.toLocaleDateString()} {date.getHours()}H{date.getMinutes() === 0 ? "00" : "30"} </div>
+                                    <div>{val.lastName} {val.firstName}</div>
+                                    <div>{val.city} {val.address}</div>
+
+                                </div>
+                            )
+                        })}
+                    </div>
+                }
+            </div>
         )
     }
 
